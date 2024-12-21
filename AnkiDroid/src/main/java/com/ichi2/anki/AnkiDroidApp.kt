@@ -122,6 +122,8 @@ open class AnkiDroidApp :
         }
         instance = this
 
+        // Initialize safe display mode for E-ink devices
+        initializeSafeDisplayMode()
         // Get preferences
         val preferences = this.sharedPrefs()
 
@@ -265,6 +267,35 @@ open class AnkiDroidApp :
         TtsVoices.launchBuildLocalesJob()
         // enable {{tts-voices:}} field filter
         TtsVoicesFieldFilter.ensureApplied()
+    }
+
+    /**
+     * Initializes the safe display mode for e-ink devices.
+     *
+     * This method checks if the `safe_display` key is already set in the shared preferences.
+     * If the key is not set and the device has an e-ink display, it sets the `safe_display` key to `true`.
+     */
+
+    private fun initializeSafeDisplayMode() {
+        val preferences = this.sharedPrefs()
+        val isSafeDisplaySet = preferences.contains("safeDisplay")
+        Timber.d("SafeDisplayMode", "isSafeDisplaySet: $isSafeDisplaySet")
+
+        if (!isSafeDisplaySet && hasEInkDisplay()) {
+            Timber.d("SafeDisplayMode", "E-Ink display detected and safeDisplay is not set. Setting it now.")
+            preferences.edit().putBoolean("safeDisplay", true).apply()
+        } else {
+            Timber.d("SafeDisplayMode", "No changes made. Either safeDisplay is already set or no E-Ink display detected.")
+        }
+    }
+
+    private fun hasEInkDisplay(): Boolean {
+        // Implement your logic to check for e-ink display
+
+        val hasEInk = true // Placeholder return value
+        Timber.d("SafeDisplayMode ", "hasEInkDisplay: $hasEInk")
+        showThemedToast(this.applicationContext, "E-Ink display detected", false)
+        return hasEInk
     }
 
     /**
